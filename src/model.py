@@ -105,9 +105,9 @@ class BynderModel:
             epoch_log["val_acc"] = correct_val / total_val
             print(f"Validation Loss: {epoch_log['val_loss']:.4f} | Validation Accuracy: {epoch_log['val_acc']:.4f}")
             # Calculate precision, recall, and F1-score
-            epoch_log["val_precision"] = precision_score(all_labels, all_preds, average='weighted')
-            epoch_log["val_recall"] = recall_score(all_labels, all_preds, average='weighted')
-            epoch_log["val_f1s"] = f1_score(all_labels, all_preds, average='weighted')
+            epoch_log["val_precision"] = precision_score(all_labels, all_preds, average='weighted', zero_division=0.0)
+            epoch_log["val_recall"] = recall_score(all_labels, all_preds, average='weighted', zero_division=0.0)
+            epoch_log["val_f1s"] = f1_score(all_labels, all_preds, average='weighted', zero_division=0.0)
 
             # Save the model if validation loss improves
             if epoch_log["val_loss"] < best_val_loss:
@@ -133,7 +133,7 @@ class BynderModel:
         # load best model
         best_model_path = f"{self.model_path}/{self.label_name}/best_model.pth"
         if os.path.exists(best_model_path):
-            self.classifier.load_state_dict(torch.load(best_model_path), weights_only=True)
+            self.classifier.load_state_dict(torch.load(best_model_path), strict=True)
         self.classifier.to(self.device)
         self.classifier.eval()  # Set the model to evaluation mode
 

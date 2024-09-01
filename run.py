@@ -24,7 +24,6 @@ def main():
             train_dataloader=data.train_dataloader,
             val_dataloader=data.val_dataloader,
             n_epochs=N_EPOCHS,
-            log_path="logs",
         )
         print(train_logs)
         test_metrics = model.test(data.test_dataloader)
