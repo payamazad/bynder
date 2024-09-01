@@ -5,7 +5,7 @@ IMAGES_DIR = "../dataset/images/"
 ORIGINAL_META_FILE = "../dataset/styles.csv"
 META_FILE = "../dataset/cleaned_styles.csv"
 BATCH_SIZE = 32
-LABELS = ["season", "usage"]  # ["gender", "articleType", "baseColour", "season", "usage"]
+LABELS = ["gender", "articleType", "baseColour", "season", "usage"]
 N_EPOCHS = 10
 
 

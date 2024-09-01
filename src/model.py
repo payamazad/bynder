@@ -1,5 +1,5 @@
 import os.path
-from src.Cream.TinyViT.models.tiny_vit import tiny_vit_21m_224
+from src.Cream.TinyViT.models.tiny_vit import tiny_vit_5m_224
 import torch.optim as optim
 import pandas as pd
 import os
@@ -22,7 +22,7 @@ class BynderModel:
 
     def create_model(self):
         # Build model
-        model = tiny_vit_21m_224(pretrained=True)
+        model = tiny_vit_5m_224(pretrained=True)
         if self.train_last_layer:
             for param in model.parameters():
                 param.requires_grad = False
