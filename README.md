@@ -44,7 +44,7 @@ model, striking a balance between performance and computational feasibility.
 | [Distilled Vit](https://arxiv.org/pdf/2302.05442v1)   |     89.6 |        307M |
 | [ViT-B/16](https://arxiv.org/pdf/2302.05442v1)        |     88.6 |         86M |
 | [CAFormer](https://arxiv.org/pdf/2210.13452v3)        |     86.9 |         39M |
-| [TinyViT](https://arxiv.org/pdf/2207.10666v1)         |     86.5 |         21M |
+| [TinyViT](https://arxiv.org/pdf/2207.10666v1)         |     80.5 |          5M |
 
 As you can see there is no huge difference in quality of 2B+ parameter model and 100M parameter models. 
 In production based on the cost per quality optimisation we can go with any of the models under 300M parameters (e.g. Distilled ViT)
@@ -58,13 +58,28 @@ to a smaller model (student) by utilizing teacher model's output as soft-labels 
 try to learn whatever teacher has learnt. By, this technique we can transform big part of information from learned by teacher model
 to student model and make a smaller models that are specialized on a specific dataset but has a general (one-shot learning) knowledge.
 This technique has used to improve and train TinyViT. A swine2, model that is trained on a huge dataset (internal to microsoft) has been 
-used as a teacher for tinyViT finetuning on ImageNet (that is itself a huge dataset). TinyVit-22m-distilled 
+used as a teacher for tinyViT finetuning on ImageNet (that is itself a huge dataset). TinyVit-5m-distilled is using this
+strong technique to make efficient mdoels with just 5m parameters.
 
-
-### Base model discussion
-### Captioning
 ## Training
+To address the multi-classification problem, I initially explored a multi-output model with a combined loss function. 
+However, this approach led to suboptimal performance in predicting "articleType" and "baseColor." Despite potential 
+benefits in terms of model storage and inference efficiency, I opted for a more modular approach with individual models 
+for each classification task. This allowed for greater control over model architecture and optimization, ensuring adequate 
+performance for all categories. While data augmentation and model partitioning were considered, optimizing the loss 
+function to prioritize "articleType" and "baseColor" was deemed the most promising solution. Due to time constraints, 
+I ultimately proceeded with separate models for each classification task.
+
+To fine-tune the model, I initially froze all layers except the final fully-connected layer. However, training the 
+entire model for a single output (gender) resulted in a minimal improvement in loss (3.3%) at the cost of significantly 
+slower training time (4.2 times slower). Based on this, I decided to continue training only the last layer, which offers 
+a balance between performance gains and computational efficiency. 
+
+I have trained each model for 10 epochs and saving the best model and finally loading the best model.
+
 ### Data split
+I have used %70 of the data for training and %10 for validation. I have used remaining %20 for testing and reporting the results.
+
 ### 
 ## Deployment
 Docker over GPU...
@@ -75,6 +90,17 @@ Kubernetes
 ## environment setup guide
 ## code structure
 # Future Improvements
+List of improvements that we can deploy to get better results:
+1. Using a stronger model (I would go Distilled-ViT from Google)
+2. Augmenting images, to get a more diverse dataset
+3. Predict baseColour using histogram of colors as feature and a sample Logistic Regression
+4. Distilling whole model using another stronger model (I would select CoCa as teacher)
+5. Analyse data deeper and find class-imbalance cases and tackle them (by updating loss, merging classes, SMOTE or other techniques)
+6. Normalization and standardization of images
+7. Train for longer number of epochs (combined with augmentation)
+8. Adding early stopping
+9. Create multi-output model (for improving inference speed and cost optimization)
+10. Better training script with early-stopping and optimizer scheduler
 
 # Links
 ## best classification models
