@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+torch
+timm
+captum
+torchserve
+torch-model-archiver
+torch-workflow-archiver

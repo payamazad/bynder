@@ -80,15 +80,45 @@ I have trained each model for 10 epochs and saving the best model and finally lo
 ### Data split
 I have used %70 of the data for training and %10 for validation. I have used remaining %20 for testing and reporting the results.
 
-### 
-## Deployment
-Docker over GPU...
-### Scaling
-Kubernetes
 
 # Usage
 ## environment setup guide
+Current codebase is written using python 3.10 and latest versions of packages. For installing packages you need to run:
+```
+pip install -r requirements.txt
+```
+
+For running trainings you need to call 
+```
+python run.py
+``` 
+This will create datasets and start training models.
+
+To create docker image and serve it you need to go to directory bynder/src/torch_serve and run:
+```
+docker build -t multi_model_torchserve .
+docker run -p 8080:8080 -p 8081:8081 multi_model_torchserve
+``` 
+
+Then you can call this server using 
+```
+curl -X POST http://localhost:8080/predictions/metadata_creator -T image_path.jpg
+```
+
+
 ## code structure
+There are several folders in this package:
+- logs: include training and testing metric logs for each model
+- models: include models saved for each label.
+- src: including python codes
+  - data.py is the DataLoader classes
+  - model.py includes image classification models definitions with train, test, save and load functions
+  - Cream: is the package by Microsoft that includes TinyViT code 
+  - torch_serve: is the folder including torch serve setup codes
+    - model_store: is the place that we store .mar models to serve
+    - create_mar: is the script for creating mar files from traced models
+    - Dockerfile: is the docker file to create a docker including torch serve
+
 # Future Improvements
 List of improvements that we can deploy to get better results:
 1. Using a stronger model (I would go Distilled-ViT from Google)
@@ -101,10 +131,4 @@ List of improvements that we can deploy to get better results:
 8. Adding early stopping
 9. Create multi-output model (for improving inference speed and cost optimization)
 10. Better training script with early-stopping and optimizer scheduler
-
-# Links
-## best classification models
-[CoCa](https://paperswithcode.com/paper/coca-contrastive-captioners-are-image-text)
-[CoCa paper](https://arxiv.org/pdf/2205.01917v2)
-[Meta Pseudo Labels](https://paperswithcode.com/paper/meta-pseudo-labels)
-[Meta Pseudo Labels paper](https://arxiv.org/pdf/2003.10580v4)
+11. Handling missing labels better

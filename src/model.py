@@ -1,13 +1,15 @@
-import os.path
-from src.Cream.TinyViT.models.tiny_vit import tiny_vit_5m_224
-import torch.optim as optim
-import pandas as pd
+import json
 import os
+import os.path
 import time
+
+import pandas as pd
 import torch
 import torch.nn as nn
-from sklearn.metrics import precision_score, recall_score, f1_score
-import json
+import torch.optim as optim
+from sklearn.metrics import f1_score, precision_score, recall_score
+
+from src.Cream.TinyViT.models.tiny_vit import tiny_vit_5m_224
 
 
 class BynderModel:
@@ -39,7 +41,7 @@ class BynderModel:
         optimizer = optim.Adam(self.classifier.parameters(), lr=0.001)
 
         # Initialize logs
-        best_val_loss = float('inf')
+        best_val_loss = float("inf")
         logs = {}
 
         # Training loop
@@ -105,9 +107,9 @@ class BynderModel:
             epoch_log["val_acc"] = correct_val / total_val
             print(f"Validation Loss: {epoch_log['val_loss']:.4f} | Validation Accuracy: {epoch_log['val_acc']:.4f}")
             # Calculate precision, recall, and F1-score
-            epoch_log["val_precision"] = precision_score(all_labels, all_preds, average='weighted', zero_division=0.0)
-            epoch_log["val_recall"] = recall_score(all_labels, all_preds, average='weighted', zero_division=0.0)
-            epoch_log["val_f1s"] = f1_score(all_labels, all_preds, average='weighted', zero_division=0.0)
+            epoch_log["val_precision"] = precision_score(all_labels, all_preds, average="weighted", zero_division=0.0)
+            epoch_log["val_recall"] = recall_score(all_labels, all_preds, average="weighted", zero_division=0.0)
+            epoch_log["val_f1s"] = f1_score(all_labels, all_preds, average="weighted", zero_division=0.0)
 
             # Save the model if validation loss improves
             if epoch_log["val_loss"] < best_val_loss:
@@ -115,7 +117,7 @@ class BynderModel:
                 root_path = f"{self.model_path}/{self.label_name}"
                 if not os.path.exists(root_path):
                     os.makedirs(root_path)
-                torch.save(self.classifier.state_dict(), f'{root_path}/best_model.pth')
+                torch.save(self.classifier.state_dict(), f"{root_path}/best_model.pth")
                 print("Best model saved.")
 
             logs[epoch] = epoch_log
@@ -164,9 +166,9 @@ class BynderModel:
         metrics["avg_test_loss"] = test_loss / len(test_dataloader.dataset)
 
         # Calculate precision, recall, and F1-score
-        metrics["precision"] = float(precision_score(all_labels, all_preds, average='weighted', zero_division=0))
-        metrics["recall"] = float(recall_score(all_labels, all_preds, average='weighted', zero_division=0))
-        metrics["f1"] = float(f1_score(all_labels, all_preds, average='weighted', zero_division=0))
+        metrics["precision"] = float(precision_score(all_labels, all_preds, average="weighted", zero_division=0))
+        metrics["recall"] = float(recall_score(all_labels, all_preds, average="weighted", zero_division=0))
+        metrics["f1"] = float(f1_score(all_labels, all_preds, average="weighted", zero_division=0))
 
         print(f"Test Loss: {metrics['avg_test_loss']:.4f}")
         print(f"Precision: {metrics['precision']:.4f}")
